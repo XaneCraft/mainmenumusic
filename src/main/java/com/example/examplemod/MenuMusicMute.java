@@ -19,16 +19,20 @@ public final class MenuMusicMute {
         return Minecraft.getInstance().level == null;
     }
 
-    // Cancel music before it ever starts while in a menu
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onPlaySound(PlaySoundEvent event) {
         SoundInstance sound = event.getSound();
-        if (sound != null && sound.getSource() == SoundSource.MUSIC && inMenu()) {
+        if (sound == null || sound.getSource() != SoundSource.MUSIC) return;
+
+        boolean isVanilla = "minecraft".equals(sound.getLocation().getNamespace());
+
+        // Block all music in menus, and block vanilla music everywhere
+        if (inMenu() || isVanilla) {
             event.setSound(null);
         }
     }
 
-    // Backup: stop anything that slipped through
+    // Backup for menus: stop anything that slipped through
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         if (inMenu()) {
