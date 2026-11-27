@@ -1,7 +1,6 @@
 package com.example.examplemod;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.sounds.SoundSource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -17,7 +16,8 @@ public final class MenuMusicMute {
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
 
-        if (minecraft.screen instanceof TitleScreen) {
+        // No world loaded = we're in a menu (title, create world, options, etc.)
+        if (minecraft.level == null) {
             minecraft.getSoundManager().stop(null, SoundSource.MUSIC);
         }
     }
