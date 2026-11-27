@@ -1,5 +1,6 @@
 package com.example.examplemod;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundSource;
@@ -7,12 +8,16 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
 
-@EventBusSubscriber(modid = ExampleMod.MODID, value = Dist.CLIENT)
-public final class MenuMusicMute {
-    private MenuMusicMute() {
+@Mod(value = "examplemod", dist = Dist.CLIENT)
+@EventBusSubscriber(modid = "examplemod", value = Dist.CLIENT)
+public class MenuMusicMute {
+    private static final org.slf4j.Logger LOG = LogUtils.getLogger();
+
+    public MenuMusicMute() {
     }
 
     private static boolean inMenu() {
@@ -22,7 +27,14 @@ public final class MenuMusicMute {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onPlaySound(PlaySoundEvent event) {
         SoundInstance sound = event.getSound();
-        if (sound == null || sound.getSource() != SoundSource.MUSIC) return;
+        if (sound == null) return;
+
+        String id = sound.getIdentifier().toString();
+        if (sound.getSource() == SoundSource.MUSIC || id.contains("music")) {
+            LOG.info("MenuMusicMute saw: id={} source={} inMenu={}", id, sound.getSource(), inMenu());
+        }
+
+        if (sound.getSource() != SoundSource.MUSIC) return;
 
         boolean isVanilla = "minecraft".equals(sound.getIdentifier().getNamespace());
 
