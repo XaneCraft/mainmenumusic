@@ -24,7 +24,7 @@ public final class MenuMusicMute {
         SoundInstance sound = event.getSound();
         if (sound == null || sound.getSource() != SoundSource.MUSIC) return;
 
-        boolean isVanilla = "minecraft".equals(sound.getLocation().getNamespace());
+        boolean isVanilla = "minecraft".equals(sound.getIdentifier().getNamespace());
 
         // Block all music in menus, and block vanilla music everywhere
         if (inMenu() || isVanilla) {
